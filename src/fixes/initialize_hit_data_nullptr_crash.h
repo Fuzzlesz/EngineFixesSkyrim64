@@ -36,7 +36,7 @@ namespace Fixes::InitializeHitDataNullPtrCrash
 
     inline void Install()
     {
-        REL::Relocation target{ RELOCATION_ID(44001, 44001), VAR_NUM(0xE, 0x10) };
+        REL::Relocation target{ RELOCATION_ID(42832, 44001), VAR_NUM(0xE, 0x10) };
 
         detail::Patch p(target.address());
         p.ready();
