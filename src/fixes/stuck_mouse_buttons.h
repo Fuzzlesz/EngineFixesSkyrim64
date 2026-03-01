@@ -20,9 +20,6 @@ namespace Fixes::StuckMouseButtons
 
             static void TrySendMouseUp(RE::IMenu* a_menu)
             {
-                if (!a_menu || !a_menu->uiMovie || !a_menu->UsesCursor())
-                    return;
-
                 auto* cursor = RE::MenuCursor::GetSingleton();
                 if (!cursor)
                     return;
@@ -39,20 +36,37 @@ namespace Fixes::StuckMouseButtons
             }
 
             RE::BSEventNotifyControl ProcessEvent(
-                const RE::MenuOpenCloseEvent*              a_event,
+                const RE::MenuOpenCloseEvent* a_event,
                 RE::BSTEventSource<RE::MenuOpenCloseEvent>*) override
             {
                 if (!a_event || !a_event->opening)
                     return RE::BSEventNotifyControl::kContinue;
 
-                SKSE::GetTaskInterface()->AddTask([]() {
+                SKSE::GetTaskInterface()->AddTask([menuName = std::string(a_event->menuName.c_str())]() {
                     auto* ui = RE::UI::GetSingleton();
                     if (!ui)
                         return;
 
-                    auto& stack = ui->menuStack;
-                    if (stack.size() >= 2)
-                        TrySendMouseUp(stack[1].get());
+                    for (auto& menuPtr : ui->menuStack) {
+                        auto* menu = menuPtr.get();
+                        if (!menu || !menu->uiMovie || !menu->UsesCursor())
+                            continue;
+
+                        float         fx = 0.0f, fy = 0.0f;
+                        std::uint32_t fButtons = 0;
+                        menu->uiMovie->GetMouseState(0, &fx, &fy, &fButtons);
+
+                        if (fButtons == 0)
+                            continue;
+
+                        for (auto& entry : ui->menuMap) {
+                            if (entry.second.menu.get() == menu && entry.first == menuName.c_str())
+                                return;
+                        }
+
+                        TrySendMouseUp(menu);
+                        return;
+                    }
                 });
 
                 return RE::BSEventNotifyControl::kContinue;
