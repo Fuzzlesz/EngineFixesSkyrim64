@@ -6,6 +6,7 @@
 #include "fixes/bslightingshader_parallax_bug.h"
 #include "fixes/fixes.h"
 #include "fixes/save_screenshots.h"
+#include "fixes/stuck_mouse_buttons.h"
 #include "fixes/tree_reflections.h"
 #include "memory/allocator.h"
 #include "memory/memory.h"
@@ -30,6 +31,8 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
             // need ini settings
             if (Settings::Fixes::bSaveScreenshots.GetValue())
                 Fixes::SaveScreenshots::Install();
+            if (Settings::Fixes::bStuckMouseButtons.GetValue())
+                Fixes::StuckMouseButtons::Install();
             // need to make sure enb dll has loaded
             if (Settings::Fixes::bTreeReflections.GetValue())
                 Fixes::TreeReflections::Install();
