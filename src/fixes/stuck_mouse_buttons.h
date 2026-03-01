@@ -59,10 +59,8 @@ namespace Fixes::StuckMouseButtons
                         if (fButtons == 0)
                             continue;
 
-                        for (auto& entry : ui->menuMap) {
-                            if (entry.second.menu.get() == menu && entry.first == menuName.c_str())
-                                return;
-                        }
+                        if (menuName == "Book Menu")
+                            return;
 
                         TrySendMouseUp(menu);
                         return;
